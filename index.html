@@ -885,17 +885,35 @@ async function initFirebase(cfg) {
 }
 
 function loginDemo() {
-  loginSuccess({name: 'Demo User', email: 'demo@calpak.app', photo: null});
+  console.log('Demo mode activated');
+  loginSuccess({
+    name: 'Demo User', 
+    email: 'demo@calpak.app', 
+    photo: null
+  });
 }
 
 function loginSuccess(user) {
+  console.log('Login success:', user);
   state.user = user;
   localStorage.setItem('calpak_user', JSON.stringify(user));
-  document.getElementById('firebase-modal').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
+  
+  // Close modals
+  const modal = document.getElementById('firebase-modal');
+  if (modal) modal.style.display = 'none';
+  
+  // Show app, hide auth
+  const authScreen = document.getElementById('auth-screen');
+  const appDiv = document.getElementById('app');
+  if (authScreen) authScreen.style.display = 'none';
+  if (appDiv) appDiv.style.display = 'block';
+  
+  // Initialize
   loadState();
-  initApp();
+  setTimeout(() => {
+    initApp();
+    console.log('App ready');
+  }, 100);
 }
 
 function logout() {
@@ -1036,15 +1054,23 @@ function removeEntry(mealIdx, entryIdx) {
 // ══════════════════════════════════════════
 function renderWater() {
   const count = state.water[state.currentDate] || 0;
-  document.getElementById('water-count').textContent = count;
-  const el = document.getElementById('water-glasses');
-  el.innerHTML = '';
+  const countEl = document.getElementById('water-count');
+  const glassEl = document.getElementById('water-glasses');
+  
+  if (countEl) countEl.textContent = count;
+  if (!glassEl) return;
+  
+  glassEl.innerHTML = '';
   for (let i=0;i<8;i++) {
     const g = document.createElement('div');
     g.className = 'water-glass' + (i < count ? ' filled' : '');
     g.textContent = i < count ? '💧' : '';
-    g.onclick = () => { state.water[state.currentDate] = i < count ? i : i+1; saveState(); renderWater(); };
-    el.appendChild(g);
+    g.onclick = () => { 
+      state.water[state.currentDate] = i < count ? i : i+1; 
+      saveState(); 
+      renderWater(); 
+    };
+    glassEl.appendChild(g);
   }
 }
 
@@ -1406,22 +1432,33 @@ function showToast(msg) {
 // ══════════════════════════════════════════
 // BOOT
 // ══════════════════════════════════════════
-window.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('CalPak booting...');
+  
   // Auto-login if user saved
   const saved = localStorage.getItem('calpak_user');
   if (saved) {
-    state.user = JSON.parse(saved);
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    loadState();
-    initApp();
+    try {
+      state.user = JSON.parse(saved);
+      console.log('User loaded:', state.user.name);
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      loadState();
+      initApp();
+      console.log('App initialized');
+    } catch(e) {
+      console.error('Boot error:', e);
+      localStorage.removeItem('calpak_user');
+    }
   }
 });
 
-// Service Worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
-}
+window.addEventListener('load', () => {
+  // Service Worker registration
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
+});
 </script>
 </body>
 </html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CalPak Test</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 20px; background: #f5f5f5; }
+    .container { max-width: 500px; margin: 0 auto; background: white; border-radius: 12px; padding: 20px; }
+    h1 { color: #1a6b3c; }
+    .test { margin: 16px 0; padding: 12px; background: #f0f0f0; border-radius: 8px; }
+    .pass { background: #d1fae5; border-left: 4px solid #10b981; }
+    .fail { background: #fee2e2; border-left: 4px solid #ef4444; }
+    button { padding: 10px 20px; background: #1a6b3c; color: white; border: none; border-radius: 8px; cursor: pointer; margin: 5px; }
+    button:hover { background: #0d4024; }
+    .log { background: #000; color: #0f0; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🇵🇰 CalPak — System Test</h1>
+    
+    <div class="test" id="test-storage">
+      ⏳ Testing localStorage...
+    </div>
+    
+    <div class="test" id="test-dom">
+      ⏳ Testing DOM...
+    </div>
+    
+    <div class="test" id="test-load">
+      ⏳ Testing app load...
+    </div>
+    
+    <h3>Quick Test</h3>
+    <button onclick="testLogin()">Test Demo Login</button>
+    <button onclick="testMeals()">Test Add Meal</button>
+    <button onclick="clearAllData()">Clear All Data</button>
+    
+    <div class="log" id="log"></div>
+  </div>
+
+  <script>
+    const logs = [];
+    function log(msg) {
+      console.log(msg);
+      logs.push(msg);
+      document.getElementById('log').textContent = logs.join('\n');
+    }
+
+    // Test storage
+    log('🧪 CalPak Test Suite');
+    log('━━━━━━━━━━━━━━━━━━━');
+    
+    try {
+      localStorage.setItem('test', '1');
+      localStorage.removeItem('test');
+      document.getElementById('test-storage').classList.add('pass');
+      document.getElementById('test-storage').innerHTML = '✅ localStorage works';
+      log('✅ localStorage available');
+    } catch(e) {
+      document.getElementById('test-storage').classList.add('fail');
+      document.getElementById('test-storage').innerHTML = '❌ localStorage failed: ' + e.message;
+      log('❌ localStorage error: ' + e.message);
+    }
+
+    // Test DOM
+    try {
+      const els = ['auth-screen', 'app', 'page-today', 'ring-eaten'];
+      let missing = [];
+      els.forEach(id => {
+        if (!document.getElementById(id)) {
+          missing.push(id);
+        }
+      });
+      
+      if (missing.length === 0) {
+        document.getElementById('test-dom').classList.add('pass');
+        document.getElementById('test-dom').innerHTML = '✅ DOM fully loaded';
+        log('✅ All DOM elements found');
+      } else {
+        document.getElementById('test-dom').classList.add('fail');
+        document.getElementById('test-dom').innerHTML = '❌ Missing: ' + missing.join(', ');
+        log('❌ Missing DOM elements: ' + missing.join(', '));
+      }
+    } catch(e) {
+      document.getElementById('test-dom').classList.add('fail');
+      log('❌ DOM test error: ' + e.message);
+    }
+
+    // Test loading index.html
+    function testLoadingApp() {
+      log('\n🔍 Loading main app...');
+      fetch('index.html')
+        .then(r => r.text())
+        .then(html => {
+          if (html.includes('FOOD_DB')) {
+            document.getElementById('test-load').classList.add('pass');
+            document.getElementById('test-load').innerHTML = '✅ Main app file loads';
+            log('✅ index.html loaded successfully');
+            log('✅ FOOD_DB found in app');
+          } else {
+            throw new Error('FOOD_DB not found');
+          }
+        })
+        .catch(e => {
+          document.getElementById('test-load').classList.add('fail');
+          document.getElementById('test-load').innerHTML = '❌ Load failed: ' + e.message;
+          log('❌ Failed to load index.html: ' + e.message);
+        });
+    }
+
+    setTimeout(testLoadingApp, 500);
+
+    // Interactive tests
+    function testLogin() {
+      log('\n▶️ Testing demo login...');
+      try {
+        localStorage.setItem('calpak_user', JSON.stringify({
+          name: 'Test User',
+          email: 'test@calpak.app',
+          photo: null
+        }));
+        log('✅ User data saved');
+        log('✅ Refresh page to see app (you should see today\'s tracker)');
+      } catch(e) {
+        log('❌ Login test failed: ' + e.message);
+      }
+    }
+
+    function testMeals() {
+      log('\n▶️ Testing meal logging...');
+      try {
+        const testData = {
+          '2024-04-29': {
+            0: [{name: 'Roti', emoji: '🫓', cal: 120, carbs: 25, protein: 4, fat: 1, qty: 1, unit: 'piece'}],
+            1: [],
+            2: [],
+            3: []
+          }
+        };
+        localStorage.setItem('calpak_state', JSON.stringify({
+          goal: 2000,
+          log: testData,
+          customFoods: [],
+          water: {}
+        }));
+        log('✅ Test meal data saved');
+        log('✅ Refresh page to see meal in tracker');
+      } catch(e) {
+        log('❌ Meal test failed: ' + e.message);
+      }
+    }
+
+    function clearAllData() {
+      if (confirm('Clear all CalPak data? You can recover it if you exported.')) {
+        localStorage.clear();
+        log('\n🗑️ All data cleared');
+        log('✅ You can now test login again');
+      }
+    }
+
+    log('\n💡 How to use:');
+    log('1. Click "Test Demo Login"');
+    log('2. Refresh this page');
+    log('3. You should see the CalPak app');
+    log('4. If not, check console (F12) for errors');
+  </script>
+</body>
+</html>

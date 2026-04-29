@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1a6b3c" />
+  <title>CalPak - Minimal Test</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f7f9f7; color: #1a1a1a; }
+    
+    #auth { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(160deg, #1a6b3c 0%, #0d4024 100%); padding: 20px; display: none; }
+    #auth.show { display: flex; }
+    
+    .logo { font-size: 48px; font-weight: 900; color: white; margin-bottom: 40px; }
+    .btn { padding: 14px 28px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin: 8px; }
+    .btn-primary { background: white; color: #1a6b3c; }
+    .btn-primary:hover { background: #f0f0f0; }
+    .btn-secondary { background: #2d9e5f; color: white; }
+    .btn-secondary:hover { background: #1a6b3c; }
+    
+    #app { display: none; padding: 20px 0 100px; }
+    #app.show { display: block; }
+    
+    .header { background: linear-gradient(135deg, #1a6b3c 0%, #0d4024 100%); color: white; padding: 20px; position: sticky; top: 0; z-index: 100; }
+    .header h1 { font-size: 24px; margin-bottom: 8px; }
+    .date-nav { display: flex; align-items: center; justify-content: space-between; }
+    .date-nav button { background: rgba(255,255,255,0.15); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 16px; }
+    .date-nav button:hover { background: rgba(255,255,255,0.25); }
+    .date-display { color: white; font-weight: 600; flex: 1; text-align: center; }
+    
+    .ring-card { background: white; margin: 16px; border-radius: 18px; padding: 24px; box-shadow: 0 4px 24px rgba(26,107,60,0.10); }
+    .ring-info { text-align: center; }
+    .ring-cal { font-size: 36px; font-weight: 700; color: #1a6b3c; }
+    .ring-label { font-size: 12px; color: #6b7280; margin-top: 4px; }
+    
+    .section { padding: 20px 16px 0; }
+    .section-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+    
+    .meal { background: white; border-radius: 16px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    .meal-header { padding: 14px 16px; display: flex; align-items: center; cursor: pointer; }
+    .meal-name { flex: 1; font-weight: 600; }
+    .meal-cal { color: #6b7280; margin-right: 8px; }
+    .meal-items { display: none; padding: 0 16px 16px; }
+    .meal-items.show { display: block; }
+    .food-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #e5e7eb; gap: 12px; }
+    .food-item:last-child { border: none; }
+    .food-name { flex: 1; }
+    .food-cal { color: #1a6b3c; font-weight: 600; }
+    .food-del { background: none; border: none; color: #ddd; cursor: pointer; }
+    .add-btn { padding: 12px; color: #1a6b3c; background: none; border: none; font-weight: 600; cursor: pointer; width: 100%; }
+    
+    .fab { position: fixed; bottom: 80px; right: 20px; width: 56px; height: 56px; background: #1a6b3c; color: white; border: none; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 16px rgba(26,107,60,0.35); z-index: 50; }
+    .fab:hover { background: #0d4024; }
+    
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; display: flex; z-index: 100; }
+    .nav-item { flex: 1; padding: 12px; text-align: center; border: none; background: none; cursor: pointer; color: #6b7280; font-size: 12px; }
+    .nav-item.active { color: #1a6b3c; font-weight: 600; }
+    
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 200; }
+    .modal.show { display: flex; }
+    .modal-content { background: white; border-radius: 16px; padding: 20px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
+    .modal-close { float: right; background: none; border: none; font-size: 20px; cursor: pointer; }
+    .modal input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; }
+    
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: white; padding: 12px 20px; border-radius: 8px; z-index: 999; opacity: 0; transition: opacity 0.3s; }
+    .toast.show { opacity: 1; }
+    
+    .empty { text-align: center; padding: 30px 20px; color: #6b7280; }
+  </style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="auth" class="show">
+  <div class="logo">CalPak 🇵🇰</div>
+  <h2 style="color:white;margin-bottom:8px">Pakistani Calorie Tracker</h2>
+  <p style="color:rgba(255,255,255,0.7);margin-bottom:30px">Track your daily calories offline</p>
+  <button class="btn btn-primary" onclick="loginDemo()">▶ Try Demo (No Login)</button>
+  <button class="btn btn-secondary" onclick="showFirebaseModal()">🔐 Google Sign-In</button>
+</div>
+
+<!-- FIREBASE MODAL -->
+<div id="fb-modal" class="modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('#fb-modal')">×</button>
+    <h3>Firebase Setup</h3>
+    <p style="font-size:13px;color:#6b7280;margin:12px 0">Create free Firebase project for Google login:</p>
+    <ol style="font-size:13px;margin:12px 0;padding-left:20px;color:#6b7280">
+      <li>Go to <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a></li>
+      <li>Create project, enable Google auth</li>
+      <li>Get API Key, Auth Domain, Project ID</li>
+    </ol>
+    <label style="font-size:12px;color:#6b7280;margin-top:12px;display:block">API Key</label>
+    <input type="text" id="apikey" placeholder="AIzaSy..." />
+    <label style="font-size:12px;color:#6b7280;margin-top:8px;display:block">Auth Domain</label>
+    <input type="text" id="authdomain" placeholder="app.firebaseapp.com" />
+    <label style="font-size:12px;color:#6b7280;margin-top:8px;display:block">Project ID</label>
+    <input type="text" id="projectid" placeholder="app-id" />
+    <button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="saveFirebaseConfig()">Save Config</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="header">
+    <h1>CalPak</h1>
+    <div class="date-nav">
+      <button onclick="changeDate(-1)">‹</button>
+      <div class="date-display" id="date-label">Today</div>
+      <button onclick="changeDate(1)">›</button>
+    </div>
+  </div>
+
+  <div class="ring-card">
+    <div class="ring-info">
+      <div class="ring-cal"><span id="eaten">0</span> kcal</div>
+      <div class="ring-label">Goal: <span id="goal">2000</span> kcal · Remaining: <span id="remain">2000</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Today's Meals</div>
+    <div id="meals-list"></div>
+  </div>
+</div>
+
+<!-- FAB Button -->
+<button class="fab" id="fab" onclick="showAddFood()" style="display:none">+</button>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav" id="nav" style="display:none">
+  <button class="nav-item active" onclick="showApp('today')">🏠 Today</button>
+  <button class="nav-item" onclick="showApp('history')">📅 History</button>
+  <button class="nav-item" onclick="showApp('foods')">🍛 Foods</button>
+  <button class="nav-item" onclick="logout()">👤 Profile</button>
+</nav>
+
+<!-- Add Food Modal -->
+<div id="add-modal" class="modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('#add-modal')">×</button>
+    <h3>Add Food</h3>
+    <input type="text" id="search-food" placeholder="Search roti, biryani..." onkeyup="searchFoods()" />
+    <div id="food-list" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script>
+const FOODS = [
+  {name:'Roti', cal:120, carbs:25, protein:4, fat:1},
+  {name:'Naan', cal:262, carbs:50, protein:9, fat:3},
+  {name:'Biryani', cal:290, carbs:35, protein:16, fat:8},
+  {name:'Daal', cal:165, carbs:26, protein:10, fat:1},
+  {name:'Karahi', cal:220, carbs:5, protein:25, fat:11},
+  {name:'Samosa', cal:130, carbs:15, protein:3, fat:7},
+  {name:'Apple', cal:95, carbs:25, protein:0, fat:0},
+  {name:'Banana', cal:89, carbs:23, protein:1, fat:0},
+  {name:'Egg', cal:78, carbs:1, protein:6, fat:5},
+  {name:'Milk', cal:65, carbs:5, protein:3, fat:4},
+];
+
+const MEALS = ['🌅 Breakfast', '☀️ Lunch', '🌙 Dinner', '🍵 Snacks'];
+
+let state = {
+  user: null,
+  date: new Date().toISOString().split('T')[0],
+  goal: 2000,
+  log: {},
+  water: {},
+};
+
+let selectedFood = null;
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('calpak_user');
+  if (saved) {
+    state.user = JSON.parse(saved);
+    showMainApp();
+  }
+  loadLog();
+  renderMeals();
+});
+
+// Auth Functions
+function loginDemo() {
+  state.user = {name: 'Demo User', email: 'demo@calpak.app'};
+  localStorage.setItem('calpak_user', JSON.stringify(state.user));
+  showMainApp();
+}
+
+function showFirebaseModal() {
+  document.getElementById('fb-modal').classList.add('show');
+}
+
+function closeModal(sel) {
+  document.querySelector(sel).classList.remove('show');
+}
+
+function saveFirebaseConfig() {
+  showToast('Firebase setup would go here. Using demo for now.');
+  loginDemo();
+}
+
+function logout() {
+  localStorage.clear();
+  state.user = null;
+  document.getElementById('app').classList.remove('show');
+  document.getElementById('auth').classList.add('show');
+  document.getElementById('nav').style.display = 'none';
+  document.getElementById('fab').style.display = 'none';
+}
+
+function showMainApp() {
+  document.getElementById('auth').classList.remove('show');
+  document.getElementById('app').classList.add('show');
+  document.getElementById('nav').style.display = 'flex';
+  document.getElementById('fab').style.display = 'block';
+}
+
+// App Functions
+function changeDate(delta) {
+  const d = new Date(state.date + 'T12:00:00');
+  d.setDate(d.getDate() + delta);
+  state.date = d.toISOString().split('T')[0];
+  renderMeals();
+  updateDateLabel();
+}
+
+function updateDateLabel() {
+  const d = new Date(state.date + 'T12:00:00');
+  const today = new Date(new Date().toISOString().split('T')[0] + 'T12:00:00');
+  const diff = Math.round((d - today) / 86400000);
+  const label = diff === 0 ? 'Today' : diff === -1 ? 'Yesterday' : diff === 1 ? 'Tomorrow' : d.toLocaleDateString();
+  document.getElementById('date-label').textContent = label;
+}
+
+function loadLog() {
+  try {
+    const saved = localStorage.getItem('calpak_log');
+    if (saved) state.log = JSON.parse(saved);
+  } catch(e) {}
+}
+
+function saveLog() {
+  localStorage.setItem('calpak_log', JSON.stringify(state.log));
+}
+
+function renderMeals() {
+  if (!state.log[state.date]) state.log[state.date] = [[], [], [], []];
+  const log = state.log[state.date];
+  
+  let total = 0;
+  for (let meals of log) {
+    for (let food of meals) total += food.cal || 0;
+  }
+  
+  document.getElementById('eaten').textContent = Math.round(total);
+  document.getElementById('remain').textContent = Math.max(0, state.goal - Math.round(total));
+  
+  const html = MEALS.map((meal, idx) => {
+    const items = log[idx] || [];
+    const cal = items.reduce((s, f) => s + (f.cal || 0), 0);
+    return `
+      <div class="meal">
+        <div class="meal-header" onclick="toggleMeal(${idx})">
+          <div class="meal-name">${meal}</div>
+          <div class="meal-cal">${cal > 0 ? Math.round(cal) + ' kcal' : ''}</div>
+        </div>
+        <div class="meal-items ${items.length > 0 ? 'show' : ''}">
+          ${items.length === 0 ? '<div class="empty">No foods logged</div>' : ''}
+          ${items.map((f, i) => `
+            <div class="food-item">
+              <div class="food-name">${f.name}</div>
+              <div class="food-cal">${Math.round(f.cal)}</div>
+              <button class="food-del" onclick="delFood(${idx}, ${i})">×</button>
+            </div>
+          `).join('')}
+          <button class="add-btn" onclick="openAddFood(${idx})">+ Add food</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  document.getElementById('meals-list').innerHTML = html;
+  saveLog();
+}
+
+function toggleMeal(idx) {
+  const items = document.querySelectorAll('.meal-items')[idx];
+  if (items) items.classList.toggle('show');
+}
+
+function delFood(mealIdx, foodIdx) {
+  state.log[state.date][mealIdx].splice(foodIdx, 1);
+  renderMeals();
+  showToast('Removed');
+}
+
+function showAddFood() {
+  openAddFood(2); // Default to dinner
+}
+
+function openAddFood(mealIdx) {
+  selectedFood = null;
+  document.getElementById('add-modal').dataset.meal = mealIdx;
+  document.getElementById('search-food').value = '';
+  document.getElementById('add-modal').classList.add('show');
+  searchFoods();
+}
+
+function searchFoods() {
+  const q = document.getElementById('search-food').value.toLowerCase();
+  const filtered = q ? FOODS.filter(f => f.name.toLowerCase().includes(q)) : FOODS;
+  
+  document.getElementById('food-list').innerHTML = filtered.map(f => `
+    <div style="padding:8px;border:1px solid #ddd;border-radius:8px;margin:4px 0;cursor:pointer" onclick="selectFood('${f.name}')">
+      <strong>${f.name}</strong><br>
+      <small style="color:#6b7280">${f.cal} kcal · C:${f.carbs}g P:${f.protein}g F:${f.fat}g</small>
+    </div>
+  `).join('');
+}
+
+function selectFood(name) {
+  const food = FOODS.find(f => f.name === name);
+  const mealIdx = document.getElementById('add-modal').dataset.meal;
+  
+  if (!state.log[state.date]) state.log[state.date] = [[], [], [], []];
+  state.log[state.date][mealIdx].push({...food, qty: 1, unit: 'serving'});
+  
+  closeModal('#add-modal');
+  renderMeals();
+  showToast(`Added ${name}`);
+}
+
+function showApp(page) {
+  if (page === 'today') {
+    document.getElementById('app').classList.add('show');
+  } else {
+    showToast(page + ' coming soon');
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+updateDateLabel();
+</script>
+</body>
+</html>
