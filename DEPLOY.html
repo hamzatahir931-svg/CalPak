@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CalPak Deployment Guide</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
+    .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+    h1 { color: #1a6b3c; margin-bottom: 10px; font-size: 2.5em; }
+    .tagline { color: #f4a500; font-size: 1.1em; margin-bottom: 30px; }
+    .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h2 { color: #1a6b3c; margin-top: 0; margin-bottom: 16px; border-bottom: 3px solid #f4a500; padding-bottom: 8px; }
+    h3 { color: #333; margin-top: 20px; margin-bottom: 10px; }
+    p { margin-bottom: 12px; }
+    .method { background: #f8fffe; border-left: 4px solid #1a6b3c; padding: 16px; margin-bottom: 16px; border-radius: 6px; }
+    .method strong { color: #1a6b3c; }
+    code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+    .step { margin-bottom: 14px; }
+    .step-num { display: inline-block; width: 28px; height: 28px; background: #1a6b3c; color: white; border-radius: 50%; text-align: center; line-height: 28px; font-weight: bold; margin-right: 10px; }
+    .feature { display: flex; gap: 12px; margin-bottom: 16px; }
+    .feature-icon { font-size: 24px; flex-shrink: 0; }
+    .feature-text { }
+    .feature-title { font-weight: 600; }
+    .button-group { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+    .btn { display: inline-block; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; text-align: center; }
+    .btn-primary { background: #1a6b3c; color: white; }
+    .btn-primary:hover { background: #0d4024; }
+    .btn-secondary { background: #f4a500; color: white; }
+    .btn-secondary:hover { background: #d48800; }
+    .warning { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; border-radius: 6px; margin-bottom: 16px; }
+    .success { background: #d1fae5; border-left: 4px solid #10b981; padding: 16px; border-radius: 6px; margin-bottom: 16px; }
+    .file-tree { background: #1a1a1a; color: #0f0; padding: 16px; border-radius: 8px; font-family: monospace; font-size: 13px; overflow-x: auto; margin-bottom: 16px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+    th { background: #1a6b3c; color: white; padding: 10px; text-align: left; }
+    td { padding: 10px; border-bottom: 1px solid #ddd; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    .status-yes { color: #10b981; font-weight: 600; }
+    .status-no { color: #ef4444; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 CalPak Deployment Guide</h1>
+    <p class="tagline">Get your Pakistani Calorie Tracker online in minutes</p>
+
+    <!-- Overview -->
+    <div class="section">
+      <h2>What You Have</h2>
+      <p>3 simple files that make a complete PWA:</p>
+      <div class="file-tree">
+index.html      (app UI + all logic)
+sw.js           (offline support)
+manifest.json   (PWA metadata)
+      </div>
+      <p><strong>No backend server required.</strong> No databases. No API keys (unless you add Google Sign-In). This is a true offline-first app that works entirely on your user's device.</p>
+    </div>
+
+    <!-- Quick Features -->
+    <div class="section">
+      <h2>✨ What Users Get</h2>
+      <div class="feature">
+        <div class="feature-icon">🍛</div>
+        <div class="feature-text">
+          <div class="feature-title">100+ Pakistani Foods</div>
+          Pre-loaded: Roti, Biryani, Daal, Karahi, Samosa & more
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <div class="feature-text">
+          <div class="feature-title">Daily Tracking</div>
+          Calories, Macros (Carbs, Protein, Fat), Portion sizes
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💾</div>
+        <div class="feature-text">
+          <div class="feature-title">Offline First</div>
+          Works without internet. Data stored on device.
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📱</div>
+        <div class="feature-text">
+          <div class="feature-title">Install Like App</div>
+          Android: Add to home screen. iOS: Add via Safari.
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔐</div>
+        <div class="feature-text">
+          <div class="feature-title">Privacy</div>
+          All data stays on user's device. No tracking.
+        </div>
+      </div>
+    </div>
+
+    <!-- Deployment Options -->
+    <div class="section">
+      <h2>🎯 Deployment Options (Pick One)</h2>
+
+      <!-- Vercel -->
+      <div class="method">
+        <strong>✅ RECOMMENDED: Vercel (Free, Easiest)</strong>
+        <p style="margin-top: 8px; color: #666;">Optimized for static files. Free tier includes unlimited bandwidth.</p>
+      </div>
+      <div class="step"><span class="step-num">1</span> Go to <a href="https://vercel.com" target="_blank">vercel.com</a></div>
+      <div class="step"><span class="step-num">2</span> Sign up with GitHub or email</div>
+      <div class="step"><span class="step-num">3</span> Click "Add New Project" → "Import Git Repository"</div>
+      <div class="step"><span class="step-num">4</span> Select your repo with the 3 files</div>
+      <div class="step"><span class="step-num">5</span> Click Deploy. <strong>Done!</strong> Your URL: <code>your-project.vercel.app</code></div>
+      <div class="button-group">
+        <a href="https://vercel.com/import" class="btn btn-primary" target="_blank">Deploy to Vercel</a>
+      </div>
+
+      <!-- Netlify -->
+      <div style="margin-top: 30px;">
+      <div class="method">
+        <strong>✅ Netlify (Free)</strong>
+        <p style="margin-top: 8px; color: #666;">Drag & drop deployment, very beginner-friendly.</p>
+      </div>
+      <div class="step"><span class="step-num">1</span> Go to <a href="https://netlify.com" target="_blank">netlify.com</a></div>
+      <div class="step"><span class="step-num">2</span> Sign up (free GitHub, Google, email)</div>
+      <div class="step"><span class="step-num">3</span> Drag the folder with 3 files into Netlify's deploy zone</div>
+      <div class="step"><span class="step-num">4</span> <strong>Done!</strong> Live instantly at <code>random-name.netlify.app</code></div>
+      <div class="button-group">
+        <a href="https://app.netlify.com/drop" class="btn btn-primary" target="_blank">Deploy to Netlify</a>
+      </div>
+      </div>
+
+      <!-- GitHub Pages -->
+      <div style="margin-top: 30px;">
+      <div class="method">
+        <strong>GitHub Pages (Free, Ties to Repository)</strong>
+        <p style="margin-top: 8px; color: #666;">Free tier at username.github.io</p>
+      </div>
+      <div class="step"><span class="step-num">1</span> Create GitHub repo: <code>calpak</code></div>
+      <div class="step"><span class="step-num">2</span> Upload 3 files to <code>main</code> branch</div>
+      <div class="step"><span class="step-num">3</span> Go to repo → Settings → Pages → Deploy from <code>main</code></div>
+      <div class="step"><span class="step-num">4</span> Your URL: <code>username.github.io/calpak</code></div>
+      </div>
+
+      <!-- Own Server -->
+      <div style="margin-top: 30px;">
+      <div class="method">
+        <strong>Own Server / VPS (nginx, Apache, etc)</strong>
+        <p style="margin-top: 8px; color: #666;">Full control. Any hosting provider works.</p>
+      </div>
+      <div class="step"><span class="step-num">1</span> Upload 3 files to your web server's public folder</div>
+      <div class="step"><span class="step-num">2</span> Ensure HTTPS is enabled (required for PWA)</div>
+      <div class="step"><span class="step-num">3</span> Check MIME types are set correctly:
+        <div style="background:#f0f0f0; padding:8px; border-radius:4px; margin:8px 0; font-family:monospace; font-size:12px;">
+          .html → text/html<br>
+          .json → application/json<br>
+          .js → application/javascript
+        </div>
+      </div>
+      <div class="step"><span class="step-num">4</span> Access at your domain. Done!</div>
+      </div>
+    </div>
+
+    <!-- Google Sign-In Setup -->
+    <div class="section">
+      <h2>🔐 Optional: Google Sign-In</h2>
+      <p><strong>Skip this if you want demo mode only.</strong> For real Google login:</p>
+      <div class="step"><span class="step-num">1</span> Go to <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a></div>
+      <div class="step"><span class="step-num">2</span> Create new project: name it "CalPak"</div>
+      <div class="step"><span class="step-num">3</span> Go to <strong>Authentication</strong> → <strong>Sign-in method</strong> → <strong>Google</strong> → Enable</div>
+      <div class="step"><span class="step-num">4</span> Go to <strong>Project Settings</strong> → <strong>Your apps</strong> → <strong>Add Web App</strong></div>
+      <div class="step"><span class="step-num">5</span> Copy your config values:
+        <div style="background:#f0f0f0; padding:12px; border-radius:4px; margin:8px 0; font-family:monospace; font-size:12px;">
+          apiKey: "AIzaSy..."<br>
+          authDomain: "your-app.firebaseapp.com"<br>
+          projectId: "your-app-id"
+        </div>
+      </div>
+      <div class="step"><span class="step-num">6</span> Go to Settings → <strong>Authorized Domains</strong> → Add your domain</div>
+      <div class="step"><span class="step-num">7</span> When users open CalPak, they'll see a Firebase setup modal. They paste the config. Done!</div>
+      <div class="success">
+        <strong>✅ Note:</strong> Config is saved locally on each user's device. You never see it.
+      </div>
+    </div>
+
+    <!-- Installation on Devices -->
+    <div class="section">
+      <h2>📱 How Users Install</h2>
+      <h3>Android (Chrome / Firefox)</h3>
+      <div class="step"><span class="step-num">1</span> Open CalPak URL in Chrome</div>
+      <div class="step"><span class="step-num">2</span> Tap ⋮ (menu) → "Install app"</div>
+      <div class="step"><span class="step-num">3</span> Tap "Install"</div>
+      <div class="step"><span class="step-num">4</span> CalPak appears on home screen like a normal app</div>
+
+      <h3 style="margin-top: 20px;">iPhone (Safari)</h3>
+      <div class="step"><span class="step-num">1</span> Open CalPak URL in Safari</div>
+      <div class="step"><span class="step-num">2</span> Tap Share → "Add to Home Screen"</div>
+      <div class="step"><span class="step-num">3</span> Name it "CalPak" → Add</div>
+      <div class="step"><span class="step-num">4</span> Icon appears on home screen</div>
+
+      <h3 style="margin-top: 20px;">Desktop (Chrome, Firefox, Edge)</h3>
+      <div class="step"><span class="step-num">1</span> Open CalPak URL</div>
+      <div class="step"><span class="step-num">2</span> Address bar shows install icon (or URL bar menu)</div>
+      <div class="step"><span class="step-num">3</span> Click install → Opens as windowed app</div>
+    </div>
+
+    <!-- Browser Support -->
+    <div class="section">
+      <h2>✅ Browser Support</h2>
+      <table>
+        <tr>
+          <th>Browser</th>
+          <th>Android</th>
+          <th>iOS</th>
+          <th>Desktop</th>
+        </tr>
+        <tr>
+          <td>Chrome / Edge</td>
+          <td class="status-yes">✅ Full</td>
+          <td>⚠️ Limited</td>
+          <td class="status-yes">✅ Full</td>
+        </tr>
+        <tr>
+          <td>Firefox</td>
+          <td class="status-yes">✅ Full</td>
+          <td>⚠️ Limited</td>
+          <td class="status-yes">✅ Full</td>
+        </tr>
+        <tr>
+          <td>Safari</td>
+          <td>N/A</td>
+          <td class="status-yes">✅ Good</td>
+          <td class="status-yes">✅ Full</td>
+        </tr>
+        <tr>
+          <td>Samsung Internet</td>
+          <td class="status-yes">✅ Full</td>
+          <td>N/A</td>
+          <td>N/A</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Troubleshooting -->
+    <div class="section">
+      <h2>🔧 Troubleshooting</h2>
+
+      <h3>Install button doesn't appear</h3>
+      <p>✓ Must be on HTTPS (except localhost)<br>
+      ✓ Must access from Chrome/Firefox on Android<br>
+      ✓ Try closing and reopening the app<br>
+      ✓ Check DevTools → Application → Manifest loads correctly</p>
+
+      <h3>Google Sign-In shows error</h3>
+      <p>✓ Check Firebase config is correct<br>
+      ✓ Add your domain to Firebase → Settings → Authorized Domains<br>
+      ✓ Make sure Google auth is enabled in Firebase<br>
+      ✓ Try demo mode instead (no login)</p>
+
+      <h3>Data not saving</h3>
+      <p>✓ Check browser allows localStorage (Settings → Privacy)<br>
+      ✓ Try a different browser<br>
+      ✓ Clear browser cache and try again<br>
+      ✓ Export your data before clearing</p>
+
+      <h3>Service Worker not registering</h3>
+      <p>✓ Must be HTTPS (or localhost)<br>
+      ✓ Hard refresh: Ctrl+Shift+R<br>
+      ✓ Check DevTools → Application → Service Workers<br>
+      ✓ Check browser console for errors</p>
+    </div>
+
+    <!-- Next Steps -->
+    <div class="section">
+      <h2>🎉 Next Steps</h2>
+      <p><strong>After deploying:</strong></p>
+      <ul style="margin-left: 20px;">
+        <li>Test on Android phone (Chrome)</li>
+        <li>Test install to home screen</li>
+        <li>Try offline: disconnect internet, app should still work</li>
+        <li>Test Google login (if set up Firebase)</li>
+        <li>Share URL with friends!</li>
+        <li>Add more Pakistani foods as needed</li>
+      </ul>
+
+      <h3 style="margin-top: 20px;">Customization</h3>
+      <p>Edit <code>index.html</code> to:</p>
+      <ul style="margin-left: 20px;">
+        <li>Add/remove foods from the database</li>
+        <li>Change colors (green, saffron, red)</li>
+        <li>Add your logo</li>
+        <li>Change app name in manifest.json</li>
+        <li>Add Firebase config for Google login</li>
+      </ul>
+
+      <h3 style="margin-top: 20px;">Coming Soon</h3>
+      <ul style="margin-left: 20px;">
+        <li>📷 Barcode scanner for packaged foods</li>
+        <li>🍳 More Pakistani recipes</li>
+        <li>📈 Advanced analytics & charts</li>
+        <li>🔔 Reminder notifications</li>
+        <li>🌙 Dark mode</li>
+        <li>🇵🇰 Urdu language</li>
+      </ul>
+    </div>
+
+    <!-- Support -->
+    <div class="section" style="background: #f8fffe; border: 2px solid #1a6b3c;">
+      <h2>💚 Made for Pakistan</h2>
+      <p><strong>CalPak v1.0.0</strong> is a free, open-source calorie tracker with Pakistani foods.</p>
+      <p>If you find bugs, want to add foods, or have feature ideas — feel free to contribute or share feedback!</p>
+      <p style="margin-top: 20px; color: #666; font-size: 0.95em;">
+        Built with ❤️ for the Pakistani fitness community. No ads. No tracking. No fees. Forever free.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

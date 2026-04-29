@@ -1,0 +1,72 @@
+{
+  "name": "CalPak - Pakistani Calorie Tracker",
+  "short_name": "CalPak",
+  "description": "Track your daily calories with 100+ Pakistani foods pre-loaded. Perfect for fitness goals in Pakistan.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#1a6b3c",
+  "categories": ["health", "fitness"],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%231a6b3c' width='540' height='720'/><text x='270' y='360' font-size='60' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='serif' font-weight='bold'>CalPak</text></svg>",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231a6b3c' width='192' height='192' rx='45'/><text x='96' y='96' font-size='100' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='serif' font-weight='bold' letter-spacing='-3'>CP</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231a6b3c' width='192' height='192' rx='45'/><text x='96' y='96' font-size='100' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='serif' font-weight='bold' letter-spacing='-3'>CP</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Log Food",
+      "short_name": "Log",
+      "description": "Quickly log food for today",
+      "url": "/?mode=quick",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><text x='48' y='48' font-size='50' text-anchor='middle' dominant-baseline='middle'>+</text></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "View History",
+      "short_name": "History",
+      "description": "See your calorie history",
+      "url": "/?mode=history",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><text x='48' y='48' font-size='50' text-anchor='middle' dominant-baseline='middle'>📊</text></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}
